@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "ES2017",
+    "sourceMap": true,
+    "noEmit": true,
+
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "strict": false
+  },
+  "exclude": [
+    "./dist",
+    "./perf",
+    "./node_modules",
+    "./sasl-ssl-example",
+    "./ssl-example"
+  ]
+}
