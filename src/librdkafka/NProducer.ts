@@ -1,21 +1,12 @@
-"use strict";
-
-const EventEmitter = require("events");
-const Promise = require("bluebird");
-const uuid = require("uuid");
-const murmur = require("murmurhash");
-const debug = require("debug");
-const murmur2Partitioner = require("murmur2-partitioner");
-
-const Metadata = require("./Metadata.js");
-
-const {
-  ProducerAnalytics
-} = require("./Analytics.js");
-
-const {
-  ProducerHealth
-} = require("./Health.js");
+import EventEmitter from "events";
+import Promise from "bluebird";
+import uuid from "uuid";
+import murmur from "murmurhash";
+import debug from "debug";
+import murmur2Partitioner from "murmur2-partitioner";
+import Metadata from "./Metadata";
+import {ProducerAnalytics} from "./Analytics";
+import {ProducerHealth} from "./Health";
 
 //@OPTIONAL
 let BlizzKafka = null;
@@ -56,7 +47,7 @@ const DEFAULT_LOGGER = {
  * native producer wrapper for node-librdkafka
  * @extends EventEmitter
  */
-class NProducer extends EventEmitter {
+export default class NProducer extends EventEmitter {
 
   /**
    * creates a new producer instance
@@ -554,7 +545,7 @@ class NProducer extends EventEmitter {
 
   /**
    * returns a list of available kafka topics on the connected brokers
-   * @param {number} timeout 
+   * @param {number} timeout
    */
   async getTopicList(timeout = 2500){
     const metadata = await this.getMetadata(timeout);
@@ -679,5 +670,3 @@ class NProducer extends EventEmitter {
     return this._health.check();
   }
 }
-
-module.exports = NProducer;

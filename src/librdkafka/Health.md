@@ -5,8 +5,7 @@
 - checkout the usage example below
 
 ```javascript
-"use strict";
-const {NConsumer, NProducer} = require("sinek");
+import {NConsumer, NProducer} from "sinek";
 
 const consumer = new NConsumer(/* .. */);
 const producer = new NProducer(/* .. */);

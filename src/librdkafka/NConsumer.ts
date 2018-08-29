@@ -1,13 +1,10 @@
-"use strict";
-
-const Promise = require("bluebird");
-const EventEmitter = require("events");
-const debug = require("debug");
-const async = require("async");
-
-const {ConsumerAnalytics} = require("./Analytics.js");
-const {ConsumerHealth} = require("./Health.js");
-const Metadata = require("./Metadata.js");
+import Promise from "bluebird";
+import EventEmitter from "events";
+import debug from "debug";
+import async from "async";
+import {ConsumerAnalytics} from "./Analytics";
+import {ConsumerHealth} from "./Health";
+import Metadata from "./Metadata";
 
 //@OPTIONAL
 let BlizzKafka = null;
@@ -44,7 +41,7 @@ const DEFAULT_LOGGER = {
  * native consumer wrapper for node-librdkafka
  * @extends EventEmitter
  */
-class NConsumer extends EventEmitter {
+export default class NConsumer extends EventEmitter {
 
   /**
    * creates a new consumer instance
@@ -1073,5 +1070,3 @@ class NConsumer extends EventEmitter {
     return metadata.asTopicList();
   }
 }
-
-module.exports = NConsumer;

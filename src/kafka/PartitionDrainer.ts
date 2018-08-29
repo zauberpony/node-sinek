@@ -1,13 +1,12 @@
-"use strict";
 
-const Kafka = require("./Kafka.js");
-const Promise = require("bluebird");
+import Kafka from "./Kafka";
+import Promise from "bluebird";
 
-const PartitionQueue = require("./PartitionQueue.js");
+import PartitionQueue from "./PartitionQueue";
 
 const DEFAULT_DRAIN_INTV = 3000;
 
-class PartitionDrainer {
+export default class PartitionDrainer {
 
   constructor(consumer = null, asyncLimit = 1, commitOnDrain = false, autoJsonParsing = true) {
 
@@ -535,5 +534,3 @@ class PartitionDrainer {
     this.consumer.emit(...args);
   }
 }
-
-module.exports = PartitionDrainer;
