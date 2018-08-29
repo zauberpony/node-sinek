@@ -1,21 +1,18 @@
 import EventEmitter from "events";
 import Promise from "bluebird";
 import uuid from "uuid";
-
 import Kafka from "./../kafka/Kafka";
 import Publisher from "./../kafka/Publisher";
 
 export default class Producer extends EventEmitter {
+    private kafkaProducerClient;
+    private producer;
+    private targetTopics: string[];
 
-  constructor(config, topic = [], defaultPartitionCount = 1) {
+  constructor(private config, topic = [], private defaultPartitionCount = 1) {
     super();
 
     this.targetTopics = Array.isArray(topic) ? topic : [topic];
-    this.config = config;
-
-    this.kafkaProducerClient = null;
-    this.producer = null;
-    this.defaultPartitionCount = defaultPartitionCount;
   }
 
   connect() {
