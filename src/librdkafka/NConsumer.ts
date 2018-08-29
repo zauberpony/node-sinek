@@ -1,4 +1,4 @@
-import Promise from "bluebird";
+import BluebirdPromise from "bluebird";
 import EventEmitter from "events";
 import debug from "debug";
 import async from "async";
@@ -135,7 +135,7 @@ export default class NConsumer extends EventEmitter {
      * @throws
      * starts analytics tasks
      * @param {object} options - analytic options
-     * @returns {Promise} resolves after as soon as analytics are available
+     * @returns {BluebirdPromise} resolves after as soon as analytics are available
      */
     enableAnalytics(options = {}) {
 
@@ -176,7 +176,7 @@ export default class NConsumer extends EventEmitter {
      * connect to broker
      * @param {boolean} asStream - optional, if client should be started in streaming mode
      * @param {object} opts - optional, options asString, asJSON (booleans)
-     * @returns {Promise.<*>}
+     * @returns {BluebirdPromise.<*>}
      */
     connect(asStream = false, opts = {}) {
 
@@ -198,11 +198,11 @@ export default class NConsumer extends EventEmitter {
         }
 
         if (conStr === null && !noptions) {
-            return Promise.reject(new Error("One of the following: zkConStr or kafkaHost must be defined."));
+            return BluebirdPromise.reject(new Error("One of the following: zkConStr or kafkaHost must be defined."));
         }
 
         if (conStr === zkConStr) {
-            return Promise.reject(new Error("NProducer does not support zookeeper connection."));
+            return BluebirdPromise.reject(new Error("NProducer does not support zookeeper connection."));
         }
 
         const config = {
@@ -220,7 +220,7 @@ export default class NConsumer extends EventEmitter {
 
         if (noptions && noptions["offset_commit_cb"]) {
             if (typeof noptions["offset_commit_cb"] !== "function") {
-                return Promise.reject(new Error("offset_commit_cb must be a function."));
+                return BluebirdPromise.reject(new Error("offset_commit_cb must be a function."));
             }
             this._extCommitCallback = noptions["offset_commit_cb"];
         }
@@ -271,10 +271,10 @@ export default class NConsumer extends EventEmitter {
      * @param {object} logger
      * @param {object} noptions
      * @param {object} tconf
-     * @returns {Promise.<*>}
+     * @returns {BluebirdPromise.<*>}
      */
     _connectInFlow(logger, noptions, tconf = {}) {
-        return new Promise((resolve, reject) => {
+        return new BluebirdPromise((resolve, reject) => {
 
             this.consumer = new BlizzKafka.KafkaConsumer(noptions, tconf);
 
@@ -324,10 +324,10 @@ export default class NConsumer extends EventEmitter {
      * @param {object} noptions
      * @param {object} tconf
      * @param {object} opts
-     * @returns {Promise.<*>}
+     * @returns {BluebirdPromise.<*>}
      */
     _connectAsStream(logger, noptions, tconf = {}, opts = {}) {
-        return new Promise(resolve => {
+        return new BluebirdPromise(resolve => {
 
             // @ts-ignore
             const {asString = false, asJSON = false} = opts;
@@ -490,7 +490,7 @@ export default class NConsumer extends EventEmitter {
      * @param {string} asString - optional, if message value should be decoded to utf8
      * @param {boolean} asJSON - optional, if message value should be json deserialised
      * @param {object} options - optional object containing options for 1:n mode:
-     * @returns {Promise.<*>}
+     * @returns {BluebirdPromise.<*>}
      */
     consume(syncEvent = null, asString = true, asJSON = false, options: any = {}) {
 
@@ -509,18 +509,18 @@ export default class NConsumer extends EventEmitter {
         noBatchCommits = typeof noBatchCommits === "undefined" ? false : noBatchCommits; //default is false
 
         if (!this.consumer) {
-            return Promise.reject(new Error("You must call and await .connect() before trying to consume messages."));
+            return BluebirdPromise.reject(new Error("You must call and await .connect() before trying to consume messages."));
         }
 
         if (syncEvent && this._asStream) {
-            return Promise.reject(new Error("Usage of syncEvent is not permitted in streaming mode."));
+            return BluebirdPromise.reject(new Error("Usage of syncEvent is not permitted in streaming mode."));
         }
 
         if (this._asStream) {
-            return Promise.reject(new Error("Calling .conumse() is not required in streaming mode."));
+            return BluebirdPromise.reject(new Error("Calling .conumse() is not required in streaming mode."));
         }
 
-        return new Promise((resolve, reject) => {
+        return new BluebirdPromise((resolve, reject) => {
 
             //if a sync event is present, we only consume a single message
             //await its callback and commit, if its not present, we just consume
@@ -750,7 +750,7 @@ export default class NConsumer extends EventEmitter {
      * @deprecated
      */
     consumeOnce() {
-        return Promise.reject(new Error("consumeOnce is not implemented for nconsumer."));
+        return BluebirdPromise.reject(new Error("consumeOnce is not implemented for nconsumer."));
     }
 
     /**
@@ -864,15 +864,15 @@ export default class NConsumer extends EventEmitter {
      * @param {string} topic - name of the kafka topic
      * @param {number} partition - optional, default is 0
      * @param {number} timeout - optional, default is 2500
-     * @returns {Promise.<object>}
+     * @returns {BluebirdPromise.<object>}
      */
     getOffsetForTopicPartition(topic, partition = 0, timeout = 2500) {
 
         if (!this.consumer) {
-            return Promise.reject(new Error("Consumer not yet connected."));
+            return BluebirdPromise.reject(new Error("Consumer not yet connected."));
         }
 
-        return new Promise((resolve, reject) => {
+        return new BluebirdPromise((resolve, reject) => {
             this.consumer.queryWatermarkOffsets(topic, partition, timeout, (error, offsets) => {
 
                 if (error) {
@@ -887,15 +887,15 @@ export default class NConsumer extends EventEmitter {
     /**
      * gets all comitted offsets
      * @param {number} timeout - optional, default is 2500
-     * @returns {Promise.<Array>}
+     * @returns {BluebirdPromise.<Array>}
      */
     getComittedOffsets(timeout = 2500) {
 
         if (!this.consumer) {
-            return Promise.resolve([]);
+            return BluebirdPromise.resolve([]);
         }
 
-        return new Promise((resolve, reject) => {
+        return new BluebirdPromise((resolve, reject) => {
             this.consumer.committed(timeout, (error, partitions) => {
 
                 if (error) {
@@ -943,7 +943,7 @@ export default class NConsumer extends EventEmitter {
      * status for the topic partitions, for all assigned partitions of
      * the consumer
      * @param {boolean} noCache - when analytics are enabled the results can be taken from cache
-     * @returns {Promise.<Array>}
+     * @returns {BluebirdPromise.<Array>}
      */
     async getLagStatus(noCache = false) {
 
@@ -960,7 +960,7 @@ export default class NConsumer extends EventEmitter {
         const assigned = this.getAssignedPartitions();
         const comitted = await this.getComittedOffsets();
 
-        const status = await Promise.all(assigned.map(async topicPartition => {
+        const status = await BluebirdPromise.all(assigned.map(async topicPartition => {
             try {
                 const brokerState = await this.getOffsetForTopicPartition(topicPartition.topic, topicPartition.partition);
                 const comittedOffset = NConsumer.findPartitionOffset(topicPartition.topic, topicPartition.partition, comitted);
@@ -1051,7 +1051,7 @@ export default class NConsumer extends EventEmitter {
 
     /**
      * runs a health check and returns object with status and message
-     * @returns {Promise.<object>}
+     * @returns {BluebirdPromise.<object>}
      */
     checkHealth() {
         return this._health.check();
@@ -1062,10 +1062,10 @@ export default class NConsumer extends EventEmitter {
      * will create topic if it doesnt exist
      * @param {string} topic - name of the topic to query metadata for
      * @param {number} timeout - optional, default is 2500
-     * @returns {Promise.<Metadata>}
+     * @returns {BluebirdPromise.<Metadata>}
      */
-    getTopicMetadata(topic, timeout = 2500): Promise<Metadata> {
-        return new Promise((resolve, reject) => {
+    getTopicMetadata(topic, timeout = 2500): BluebirdPromise<Metadata> {
+        return new BluebirdPromise((resolve, reject) => {
 
             if (!this.consumer) {
                 return reject(new Error("You must call and await .connect() before trying to get metadata."));
@@ -1088,7 +1088,7 @@ export default class NConsumer extends EventEmitter {
     /**
      * @alias getTopicMetadata
      * @param {number} timeout - optional, default is 2500
-     * @returns {Promise.<Metadata>}
+     * @returns {BluebirdPromise.<Metadata>}
      */
     getMetadata(timeout = 2500) {
         return this.getTopicMetadata(null, timeout);

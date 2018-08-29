@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import Promise from "bluebird";
+import BluebirdPromise from "bluebird";
 import uuid from "uuid";
 import murmur from "murmurhash";
 import debug from "debug";
@@ -157,10 +157,10 @@ export default class NProducer extends EventEmitter {
 
     /**
      * connects to the broker
-     * @returns {Promise.<*>}
+     * @returns {BluebirdPromise.<*>}
      */
     connect() {
-        return new Promise((resolve, reject) => {
+        return new BluebirdPromise((resolve, reject) => {
             // @ts-ignore
             let {zkConStr, kafkaHost, logger, options, noptions, tconf} = this.config;
             // @ts-ignore
@@ -280,7 +280,7 @@ export default class NProducer extends EventEmitter {
      * @param {string} _key - optional message key
      * @param {string} _partitionKey - optional key to evaluate partition for this message
      * @param {*} _opaqueKey - optional opaque token, which gets passed along to your delivery reports
-     * @returns {Promise.<object>}
+     * @returns {BluebirdPromise.<object>}
      */
     async send(topicName, message, _partition = null, _key = null, _partitionKey = null, _opaqueKey = null) {
 
@@ -349,7 +349,7 @@ export default class NProducer extends EventEmitter {
      * @param {number} partition - optional partition to produce to
      * @param {number} version - optional version of the message value
      * @param {string} partitionKey - optional key to evaluate partition for this message
-     * @returns {Promise.<object>}
+     * @returns {BluebirdPromise.<object>}
      */
     async buffer(topic, identifier, payload, partition = null, version = null, partitionKey = null) {
 
@@ -388,7 +388,7 @@ export default class NProducer extends EventEmitter {
      * @param {string} partitionKey - optional key to deterministcally detect partition
      * @param {number} partition - optional partition (overwrites partitionKey)
      * @param {string} messageType - optional messageType (for the formatted message value)
-     * @returns {Promise.<object>}
+     * @returns {BluebirdPromise.<object>}
      */
     async _sendBufferFormat(topic, identifier, _payload, version = 1, _, partitionKey = null, partition = null, messageType = "") {
 
@@ -440,7 +440,7 @@ export default class NProducer extends EventEmitter {
      * @param {*} _ -ignoreable, here for api compatibility
      * @param {string} partitionKey - optional key to deterministcally detect partition
      * @param {number} partition - optional partition (overwrites partitionKey)
-     * @returns {Promise.<object>}
+     * @returns {BluebirdPromise.<object>}
      */
     bufferFormatPublish(topic, identifier, _payload, version = 1, _, partitionKey = null, partition = null) {
         return this._sendBufferFormat(topic, identifier, _payload, version, _, partitionKey, partition, MESSAGE_TYPES.PUBLISH);
@@ -455,7 +455,7 @@ export default class NProducer extends EventEmitter {
      * @param {*} _ -ignoreable, here for api compatibility
      * @param {string} partitionKey - optional key to deterministcally detect partition
      * @param {number} partition - optional partition (overwrites partitionKey)
-     * @returns {Promise.<object>}
+     * @returns {BluebirdPromise.<object>}
      */
     bufferFormatUpdate(topic, identifier, _payload, version = 1, _, partitionKey = null, partition = null) {
         return this._sendBufferFormat(topic, identifier, _payload, version, _, partitionKey, partition, MESSAGE_TYPES.UPDATE);
@@ -470,7 +470,7 @@ export default class NProducer extends EventEmitter {
      * @param {*} _ -ignoreable, here for api compatibility
      * @param {string} partitionKey - optional key to deterministcally detect partition
      * @param {number} partition - optional partition (overwrites partitionKey)
-     * @returns {Promise.<object>}
+     * @returns {BluebirdBluebirdPromise.<object>}
      */
     bufferFormatUnpublish(topic, identifier, _payload, version = 1, _, partitionKey = null, partition = null) {
         return this._sendBufferFormat(topic, identifier, _payload, version, _, partitionKey, partition, MESSAGE_TYPES.UNPUBLISH);
@@ -515,10 +515,10 @@ export default class NProducer extends EventEmitter {
      * will create topic if it doesnt exist
      * @param {string} topic - name of the topic to query metadata for
      * @param {number} timeout - optional, default is 2500
-     * @returns {Promise.<Metadata>}
+     * @returns {BluebirdPromise.<Metadata>}
      */
-    getTopicMetadata(topic, timeout = 2500): Promise<Metadata> {
-        return new Promise((resolve, reject) => {
+    getTopicMetadata(topic, timeout = 2500): BluebirdPromise<Metadata> {
+        return new BluebirdPromise((resolve, reject) => {
 
             if (!this.producer) {
                 return reject(new Error("You must call and await .connect() before trying to get metadata."));
@@ -541,7 +541,7 @@ export default class NProducer extends EventEmitter {
     /**
      * @alias getTopicMetadata
      * @param {number} timeout - optional, default is 2500
-     * @returns {Promise.<Metadata>}
+     * @returns {BluebirdPromise.<Metadata>}
      */
     getMetadata(timeout = 2500) {
         return this.getTopicMetadata(null, timeout);
@@ -563,7 +563,7 @@ export default class NProducer extends EventEmitter {
      * keeps a local cache to speed up future requests
      * resolves to -1 if an error occures
      * @param {string} topic - name of topic
-     * @returns {Promise.<number>}
+     * @returns {BluebirdPromise.<number>}
      */
     async getPartitionCountOfTopic(topic) {
 
@@ -669,7 +669,7 @@ export default class NProducer extends EventEmitter {
 
     /**
      * runs a health check and returns object with status and message
-     * @returns {Promise.<object>}
+     * @returns {BluebirdPromise.<object>}
      */
     checkHealth() {
         return this._health.check();

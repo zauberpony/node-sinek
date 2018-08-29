@@ -37,7 +37,7 @@ const MESSAGES = {
 /**
  * little pojso class around the check object
  */
-class Check {
+export class Check {
     private messages: string[];
 
     /**
