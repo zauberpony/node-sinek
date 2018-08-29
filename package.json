@@ -2,7 +2,8 @@
     "name": "sinek",
     "version": "6.19.0",
     "description": "Node.js kafka client, consumer, producer polite out of the box",
-    "main": "index.js",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "engines": {
         "node": ">=8.11.3"
     },
@@ -14,7 +15,8 @@
         "kafka:logs": "docker-compose --file ./kafka-setup/docker-compose.yml logs -f",
         "kafka:console": "./kafka-setup/kafka-console.sh",
         "test": "_mocha --recursive --timeout 32500 --exit -R spec test/int",
-        "rd-lt": "NODE_ENV=production node ./perf/RDLoadTest.js"
+        "rd-lt": "NODE_ENV=production node ./perf/RDLoadTest.js",
+        "prepublishOnly": "tsc -p tsconfig.dist.json"
     },
     "repository": {
         "type": "git",
